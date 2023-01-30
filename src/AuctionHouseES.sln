@@ -3,7 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.4.33205.214
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "WebApi", "WebApi\WebApi.fsproj", "{B7681E3E-B92B-43BB-AFA8-38B6265BB25F}"
+Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "WebApi", "WebApi\WebApi.fsproj", "{B7681E3E-B92B-43BB-AFA8-38B6265BB25F}"
+EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "AuctionHouseES", "AuctionHouseES\AuctionHouseES.fsproj", "{D7BA1C91-1E88-4A94-B9DE-671777974AF1}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +17,10 @@ Global
 		{B7681E3E-B92B-43BB-AFA8-38B6265BB25F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B7681E3E-B92B-43BB-AFA8-38B6265BB25F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B7681E3E-B92B-43BB-AFA8-38B6265BB25F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D7BA1C91-1E88-4A94-B9DE-671777974AF1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D7BA1C91-1E88-4A94-B9DE-671777974AF1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D7BA1C91-1E88-4A94-B9DE-671777974AF1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D7BA1C91-1E88-4A94-B9DE-671777974AF1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
