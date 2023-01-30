@@ -6,15 +6,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Include="Events.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Giraffe" Version="6.0.0" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\AuctionHouseES\AuctionHouseES.fsproj" />
+    <PackageReference Include="Marten" Version="5.11.0" />
   </ItemGroup>
 
 </Project>

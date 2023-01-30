@@ -1,4 +1,6 @@
-﻿open Microsoft.AspNetCore.Builder
+﻿module AuctionHouseES.Program
+
+open Microsoft.AspNetCore.Builder
 open Giraffe
 open Marten
 
