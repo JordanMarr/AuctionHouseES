@@ -6,24 +6,34 @@ open Marten
 open Microsoft.AspNetCore.Http
 open Events
 
-let createSampleAuction (auctionId: AuctionId) (next: HttpFunc) (ctx: HttpContext) =
+type CreateAuctionRequest = 
+    {
+        AuctionId: AuctionId
+        StartedBy: UserId
+        StartsOn: DateTimeOffset
+        EndsOn: DateTimeOffset
+        Title: string
+        Description: string
+        MinimumBid: decimal option
+    }
+
+let createAuction (req: CreateAuctionRequest) (next: HttpFunc) (ctx: HttpContext) =
     task {
         let auctionCreated : Events.AuctionCreated = 
-            let startedOn = DateTimeOffset.Now
             {
-                Id = auctionId
-                Title = "Sample Auction"
-                Description = "A sample auction"
-                StartedBy = Users.seller
-                StartedOn = startedOn
-                EndsOn = startedOn.AddHours 3
-                MinimumBid = None
+                Id = req.AuctionId
+                Title = req.Title
+                Description = req.Description
+                StartedBy = req.StartedBy
+                StartsOn = req.StartsOn
+                EndsOn = req.EndsOn
+                MinimumBid = req.MinimumBid
             }
 
         let cfg = ctx.GetService<AppConfig>()
         use store = DocumentStore.For(cfg.ConnectionString)
         use session = store.LightweightSession()        
-        session.Events.StartStream(auctionId, [ box auctionCreated ]) |> ignore
+        session.Events.StartStream(req.AuctionId, [ box auctionCreated ]) |> ignore
         do! session.SaveChangesAsync()
         return! Successful.OK() next ctx        
     }

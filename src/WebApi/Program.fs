@@ -11,7 +11,7 @@ open Marten.Events.Projections
 let routes =
     choose [ 
         GET >=> route "/" >=> text "Auction House ES" 
-        POST >=> routef "/create-sample-auction/%O" Handlers.createSampleAuction
+        POST >=> route "/create-auction/" >=> bindJson Handlers.createAuction
         POST >=> routef "/cancel-auction/%O" Handlers.cancelAuction
         POST >=> route "/place-bid/" >=> bindJson Handlers.placeBid 
         GET >=> routef "/get-auction/%O" Handlers.getAuction
