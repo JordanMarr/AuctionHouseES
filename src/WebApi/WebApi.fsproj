@@ -9,7 +9,7 @@
     <Content Include="appsettings.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Compile Include="Util.fs" />
+    <Compile Include="AppConfig.fs" />
     <Compile Include="Events.fs" />
     <Compile Include="Handlers.fs" />
     <Compile Include="Program.fs" />

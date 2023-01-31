@@ -2,6 +2,9 @@
 
 open System
 
+type AuctionId = Guid
+type UserId = Guid
+
 type AuctionCreated = 
     {
         Id: AuctionId
