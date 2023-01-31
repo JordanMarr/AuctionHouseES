@@ -71,9 +71,20 @@ let placeBid (req: BidRequest) (next: HttpFunc) (ctx: HttpContext) =
         let cfg = ctx.GetService<AppConfig>()
         use store = DocumentStore.For(cfg.ConnectionString)
         use session = store.LightweightSession()
-        session.Events.Append(req.AuctionId, [ box bidPlaced ]) |> ignore
-        do! session.SaveChangesAsync()
-        return! Successful.OK() next ctx
+
+        // Validate against the current state
+        let! aggregate = session.Events.AggregateStreamAsync<Projections.Auction>(req.AuctionId)
+        match aggregate.Status with 
+        | Projections.AuctionStatus.Created -> 
+            return! RequestErrors.conflict(text "Auction has not started yet.") next ctx
+        | Projections.AuctionStatus.Canceled -> 
+            return! RequestErrors.conflict(text "Auction has been canceled.") next ctx
+        | Projections.AuctionStatus.Ended -> 
+            return! RequestErrors.conflict(text "Auction has already ended.") next ctx
+        | Projections.AuctionStatus.Started -> 
+            session.Events.Append(req.AuctionId, [ box bidPlaced ]) |> ignore
+            do! session.SaveChangesAsync()
+            return! Successful.OK() next ctx
     }
 
 let getAuction (auctionId: AuctionId) (next: HttpFunc) (ctx: HttpContext) = 
