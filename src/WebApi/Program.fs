@@ -1,57 +1,35 @@
 ﻿module AuctionHouseES.Program
 
-open Microsoft.AspNetCore.Builder
 open Giraffe
 open Marten
-open Microsoft.AspNetCore.Http
-open System
+open Microsoft.AspNetCore.Builder
+open Microsoft.Extensions.Hosting
+open Microsoft.Extensions.Configuration;
+open Microsoft.Extensions.DependencyInjection
 
-module Users = 
-    let seller = Guid.Parse "D63503AF-6D4F-4A6B-B242-1893D99D28E5"
-    let bidder1 = Guid.Parse "315DBA78-1744-42D3-B824-69399448AF9C"
-
-let connectionString = "Server=localhost;Port=54320;Database=postgres;User Id=postgres;Password=example;Timeout=3"
-
-let createSampleAuction (next: HttpFunc) (ctx: HttpContext) =
-    task {
-        let auctionId = Guid.NewGuid()
-
-        let auctionStarted : Events.AuctionCreated = 
-            let startedOn = DateTimeOffset.Now
-            {
-                Id = auctionId
-                Title = "Sample Auction"
-                Description = "A sample auction"
-                StartedBy = Users.seller
-                StartedOn = startedOn
-                EndsOn = startedOn.AddHours 3
-                MinimumBid = None
-            }
-
-        use store = DocumentStore.For(connectionString)
-        use session = store.LightweightSession()
-        
-        session.Events.StartStream(auctionId, [ box auctionStarted ]) |> ignore
-        
-        do! session.SaveChangesAsync()
-        return! next ctx
-    }
-
-let webApp =
+let routes =
     choose [ 
-        route "/" >=> text "Hello world!" 
-        route "/create-sample-auction" >=> createSampleAuction
+        GET >=> route "/" >=> text "Auction House ES" 
+        POST >=> routef "/create-sample-auction/%O" Handlers.createSampleAuction
+        POST >=> routef "/cancel-auction/%O" Handlers.cancelAuction
     ]
 
 let builder = WebApplication.CreateBuilder()
-
-builder.Services.AddMarten(fun (opts: StoreOptions) -> 
-    opts.Connection connectionString
+builder.WebHost
+    .ConfigureAppConfiguration(fun ctx cfg ->
+        cfg
+            .AddJsonFile("appsettings.json", false, true)
+            .AddEnvironmentVariables() |> ignore
+    )
+    .ConfigureServices(fun ctx services -> 
+        let cs = ctx.Configuration.GetConnectionString "postgres"
+        services
+            .AddSingleton({ AppConfig.ConnectionString = cs })
+            .AddMarten(fun (opts: StoreOptions) -> opts.Connection cs)
+            |> ignore
+    )
     |> ignore
-)
-|> ignore
 
 let app = builder.Build()
-app.UseGiraffe webApp
-
+app.UseGiraffe routes
 app.Run()

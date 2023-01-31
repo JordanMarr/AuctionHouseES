@@ -16,10 +16,17 @@ type AuctionCreated =
         MinimumBid: decimal option
     }
 
+type AuctionCanceled  =
+    {
+        Id: AuctionId
+        CanceledBy: UserId
+        CanceledOn: DateTimeOffset
+        Reason: string
+    }
+
 type BidPlaced = 
     {
         Bidder: UserId
         Amount: decimal
         ReceivedOn: DateTimeOffset
     }
-
