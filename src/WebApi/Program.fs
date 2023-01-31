@@ -37,7 +37,7 @@ builder.WebHost
                 opts.Connection connStr
 
                 // Tell Marten to update this aggregate inline
-                opts.Projections.SelfAggregate<Events.Projections.Auction>(ProjectionLifecycle.Inline) |> ignore
+                opts.Projections.SelfAggregate<Projections.Auction>(ProjectionLifecycle.Inline) |> ignore
             )
             |> ignore
     )

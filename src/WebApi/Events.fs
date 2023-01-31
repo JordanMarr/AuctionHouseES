@@ -1,40 +1,41 @@
-﻿module AuctionHouseES.Events
+﻿namespace AuctionHouseES
 
 open System
 
 type AuctionId = Guid
 type UserId = Guid
 
-type AuctionCreated = 
-    {
-        Id: AuctionId
-        StartedBy: UserId
-        StartsOn: DateTimeOffset
-        EndsOn: DateTimeOffset
-        Title: string
-        Description: string
-        MinimumBid: decimal option
-    }
+module Events = 
 
-type AuctionCanceled  =
-    {
-        Id: AuctionId
-        CanceledBy: UserId
-        CanceledOn: DateTimeOffset
-        Reason: string
-    }
+    type AuctionCreated = 
+        {
+            Id: AuctionId
+            StartedBy: UserId
+            StartsOn: DateTimeOffset
+            EndsOn: DateTimeOffset
+            Title: string
+            Description: string
+            MinimumBid: decimal option
+        }
 
-type BidPlaced = 
-    {
-        Bidder: UserId
-        Amount: decimal
-        ReceivedOn: DateTimeOffset
-    }
-    member this.BidPlaced() = 
-        { Bidder = Guid.NewGuid(); Amount = 0.0M; ReceivedOn = DateTimeOffset.Now }
+    type AuctionCanceled  =
+        {
+            Id: AuctionId
+            CanceledBy: UserId
+            CanceledOn: DateTimeOffset
+            Reason: string
+        }
+
+    type BidPlaced = 
+        {
+            Bidder: UserId
+            Amount: decimal
+            ReceivedOn: DateTimeOffset
+        }
 
 
 module Projections = 
+    open Events
 
     [<CLIMutable>]
     type Auction = 
