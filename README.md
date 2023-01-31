@@ -15,5 +15,5 @@ Overall, I'm impressed with Marten so far! Everything worked just as Jeremy expl
 
 ## Contribute
 I would really love to see improvements made to this, alternative approaches, or even a side-by-side comparison made with another framework.
-I would also be curious to see what suggestions the F# community has on improvements that could be made for F# (especially around creating the projection).
+I would also be curious to see what suggestions the F# community has on improvements that could be made for F#.
 
