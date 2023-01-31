@@ -9,5 +9,16 @@ GET {{baseUrl}}/
 POST {{baseUrl}}/create-sample-auction/cc44da9b-e574-4f50-bc07-09bbe5ee49ec
 
 ###
+# Place bid
+POST {{baseUrl}}/place-bid/
+content-type: application/json
+
+{
+    "AuctionId": "cc44da9b-e574-4f50-bc07-09bbe5ee49ec",
+    "Bidder": "315dba78-1744-42d3-b824-69399448af9c",
+    "Amount": "1.99"
+}
+
+###
 # Cancel auction
 POST {{baseUrl}}/cancel-auction/cc44da9b-e574-4f50-bc07-09bbe5ee49ec
