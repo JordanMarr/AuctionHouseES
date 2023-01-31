@@ -30,46 +30,55 @@ type BidPlaced =
         Amount: decimal
         ReceivedOn: DateTimeOffset
     }
+    member this.BidPlaced() = 
+        { Bidder = Guid.NewGuid(); Amount = 0.0M; ReceivedOn = DateTimeOffset.Now }
+
 
 module Projections = 
 
-    type Auction() =
-        member val Id: AuctionId = Guid.Empty with get, set
-        member val StartedBy: UserId = Guid.Empty with get, set
-        member val StartsOn: DateTimeOffset = DateTimeOffset.MinValue with get, set
-        member val EndsOn: DateTimeOffset = DateTimeOffset.MinValue with get, set
-        member val Title: string = "" with get, set
-        member val Description: string = "" with get, set
-        member val MinimumBid: decimal option = None with get, set
-        member val Status: AuctionStatus = Created with get, set
-        member val Bids: Bid list = [] with get, set
-
+    [<CLIMutable>]
+    type Auction = 
+        {
+            Id: Guid
+            StartedBy: UserId
+            StartsOn: DateTimeOffset
+            EndsOn: DateTimeOffset
+            Title: string
+            Description: string
+            MinimumBid: decimal option
+            Status: AuctionStatus
+            Bids: Bid list
+        }
         member this.Apply(ev: AuctionCreated) = 
-            this.Id <- ev.Id
-            this.StartedBy <- ev.StartedBy
-            this.StartsOn <- ev.StartsOn
-            this.EndsOn <- ev.EndsOn
-            this.Title <- ev.Title
-            this.Description <- ev.Description
-            this.MinimumBid <- ev.MinimumBid
-            this.Status <- if DateTimeOffset.Now < ev.StartsOn then Created else Started
-            this.Bids <- []
+            { 
+                Id = ev.Id
+                StartedBy = ev.StartedBy
+                StartsOn = ev.StartsOn
+                EndsOn = ev.EndsOn
+                Title = ev.Title
+                Description = ev.Description
+                MinimumBid = ev.MinimumBid
+                Status = if DateTimeOffset.Now < ev.StartsOn then Created else Started
+                Bids = []
+            }
 
         member this.Apply(ev: AuctionCanceled) =
-            this.Status <- Canceled
+            { this with Status = Canceled }
 
         member this.Apply(ev: BidPlaced) =
-            let bid = Bid(Bidder = ev.Bidder, Amount = ev.Amount, ReceivedOn = ev.ReceivedOn)
-            this.Bids <- this.Bids @ [ bid ]
-
+            let bid = { Bidder = ev.Bidder; Amount = ev.Amount; ReceivedOn = ev.ReceivedOn }
+            { this with Bids = this.Bids @ [ bid ] }
+                
     and AuctionStatus = 
         | Created
         | Started
         | Ended
         | Canceled
 
-    and Bid() =
-        member val Bidder: UserId = Guid.Empty with get, set
-        member val Amount: decimal = 0.0M with get, set
-        member val ReceivedOn: DateTimeOffset = DateTimeOffset.MinValue with get, set
+    and [<CLIMutable>] Bid = 
+        { 
+            Bidder: UserId
+            Amount: decimal
+            ReceivedOn: DateTimeOffset
+        }
         
