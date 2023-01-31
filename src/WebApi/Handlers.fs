@@ -65,3 +65,14 @@ let placeBid (req: BidRequest) (next: HttpFunc) (ctx: HttpContext) =
         do! session.SaveChangesAsync()
         return! Successful.OK() next ctx
     }
+
+let getAuction (auctionId: AuctionId) (next: HttpFunc) (ctx: HttpContext) = 
+    task {
+        let cfg = ctx.GetService<AppConfig>()
+        use store = DocumentStore.For(cfg.ConnectionString)
+        use session = store.LightweightSession()
+
+        // If using "Live" aggregation
+        let! aggregate = session.Events.AggregateStreamAsync<Projections.Auction>(auctionId)
+        return! Successful.ok (json aggregate) next ctx
+    }

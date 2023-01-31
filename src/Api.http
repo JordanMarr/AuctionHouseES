@@ -22,3 +22,7 @@ content-type: application/json
 ###
 # Cancel auction
 POST {{baseUrl}}/cancel-auction/cc44da9b-e574-4f50-bc07-09bbe5ee49ec
+
+###
+# Get Auction (Projection)
+GET {{baseUrl}}/get-auction/cc44da9b-e574-4f50-bc07-09bbe5ee49ec
