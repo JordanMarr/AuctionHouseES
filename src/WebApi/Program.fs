@@ -29,12 +29,12 @@ builder.WebHost
             .AddEnvironmentVariables() |> ignore
     )
     .ConfigureServices(fun ctx services -> 
-        let cs = ctx.Configuration.GetConnectionString "postgres"
+        let connStr = ctx.Configuration.GetConnectionString "postgres"
         services
             .AddGiraffe()
-            .AddSingleton({ AppConfig.ConnectionString = cs })
+            .AddSingleton<IDocumentStore>(fun _ -> DocumentStore.For(connStr) :> IDocumentStore)
             .AddMarten(fun (opts: StoreOptions) -> 
-                opts.Connection cs
+                opts.Connection connStr
 
                 // Tell Marten to update this aggregate inline
                 opts.Projections.SelfAggregate<Events.Projections.Auction>(ProjectionLifecycle.Inline) |> ignore

@@ -30,8 +30,7 @@ let createAuction (req: CreateAuctionRequest) (next: HttpFunc) (ctx: HttpContext
                 MinimumBid = req.MinimumBid
             }
 
-        let cfg = ctx.GetService<AppConfig>()
-        use store = DocumentStore.For(cfg.ConnectionString)
+        let store = ctx.GetService<IDocumentStore>()
         use session = store.LightweightSession()        
         session.Events.StartStream(req.AuctionId, [ box auctionCreated ]) |> ignore
         do! session.SaveChangesAsync()
@@ -50,8 +49,7 @@ let cancelAuction (req: CancelAuctionRequest) (next: HttpFunc) (ctx: HttpContext
                 Reason = req.Reason
             }
 
-        let cfg = ctx.GetService<AppConfig>()
-        use store = DocumentStore.For(cfg.ConnectionString)
+        let store = ctx.GetService<IDocumentStore>()
         use session = store.LightweightSession()
 
         // Validate against the current state
@@ -80,8 +78,7 @@ let placeBid (req: BidRequest) (next: HttpFunc) (ctx: HttpContext) =
                 Events.BidPlaced.ReceivedOn = DateTimeOffset.Now
             }
 
-        let cfg = ctx.GetService<AppConfig>()
-        use store = DocumentStore.For(cfg.ConnectionString)
+        let store = ctx.GetService<IDocumentStore>()
         use session = store.LightweightSession()
 
         // Validate against the current state
@@ -101,8 +98,7 @@ let placeBid (req: BidRequest) (next: HttpFunc) (ctx: HttpContext) =
 
 let getAuction (auctionId: AuctionId) (next: HttpFunc) (ctx: HttpContext) = 
     task {
-        let cfg = ctx.GetService<AppConfig>()
-        use store = DocumentStore.For(cfg.ConnectionString)
+        let store = ctx.GetService<IDocumentStore>()
         use session = store.LightweightSession()
 
         // If using "Live" aggregation
