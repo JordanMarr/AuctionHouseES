@@ -10,13 +10,9 @@
 # Home
 GET {{baseUrl}}/
 
-###
-# Create sample auction
-POST {{baseUrl}}/create-sample-auction/cc44da9b-e574-4f50-bc07-09bbe5ee49ec
-
 ### 
 # Create auction
-POST {{baseUrl}}/create-auction/
+POST {{baseUrl}}/api/auction/create/
 Content-Type: application/json
 
 {
@@ -31,7 +27,7 @@ Content-Type: application/json
 
 ###
 # Place bid
-POST {{baseUrl}}/place-bid/
+POST {{baseUrl}}/api/auction/bid/
 Content-Type: application/json
 
 {
@@ -42,7 +38,7 @@ Content-Type: application/json
 
 ###
 # Cancel auction
-POST {{baseUrl}}/cancel-auction/
+POST {{baseUrl}}/api/auction/cancel/
 Content-Type: application/json
 
 {
@@ -53,4 +49,4 @@ Content-Type: application/json
 
 ###
 # Get Auction (Projection)
-GET {{baseUrl}}/get-auction/{{auction1}}
+GET {{baseUrl}}/api/auction/{{auction1}}

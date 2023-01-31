@@ -1,20 +1,24 @@
 ﻿module AuctionHouseES.Program
 
 open Giraffe
+open Giraffe.EndpointRouting
 open Marten
+open Marten.Events.Projections
 open Microsoft.AspNetCore.Builder
 open Microsoft.Extensions.Hosting
 open Microsoft.Extensions.Configuration;
 open Microsoft.Extensions.DependencyInjection
-open Marten.Events.Projections
 
-let routes =
-    choose [ 
-        GET >=> route "/" >=> text "Auction House ES" 
-        POST >=> route "/create-auction/" >=> bindJson Handlers.createAuction
-        POST >=> route "/cancel-auction/" >=> bindJson Handlers.cancelAuction
-        POST >=> route "/place-bid/" >=> bindJson Handlers.placeBid 
-        GET >=> routef "/get-auction/%O" Handlers.getAuction
+let endpoints = [ 
+        GET [ route "/" (text "Auction House ES") ]
+        subRoute "/api/auction" [
+            POST [ 
+                route "/create/" (bindJson Handlers.createAuction)
+                route "/cancel/" (bindJson Handlers.cancelAuction)
+                route "/bid/" (bindJson Handlers.placeBid) 
+            ]
+            GET [ routef "/%O" Handlers.getAuction ]
+        ]
     ]
 
 let builder = WebApplication.CreateBuilder()
@@ -40,5 +44,9 @@ builder.WebHost
     |> ignore
 
 let app = builder.Build()
-app.UseGiraffe routes
+app
+    .UseRouting()
+    .UseEndpoints(fun e -> e.MapGiraffeEndpoints endpoints)
+    |> ignore 
+
 app.Run()
