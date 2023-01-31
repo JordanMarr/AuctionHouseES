@@ -1,6 +1,6 @@
 @baseUrl = https://localhost:5001
 
-@sellerId = d63503af-6d4f-4a6b-b242-1893d99d28e5
+@seller = d63503af-6d4f-4a6b-b242-1893d99d28e5
 @bidder1 = 315dba78-1744-42d3-b824-69399448af9c
 @bidder2 = 16cd09df-6063-4257-9ebb-19bb737bdd8b
 
@@ -23,7 +23,7 @@ Content-Type: application/json
     "AuctionId": "{{auction1}}",
     "Title": "Sample Auction",
     "Description": "A sample auction",
-    "StartedBy": "{{sellerId}}",
+    "StartedBy": "{{seller}}",
     "StartsOn": "2023-01-31T04:27:01+00:00",
     "EndsOn": "2023-01-31T07:27:01+00:00",
     "MinimumBid": null
@@ -42,7 +42,14 @@ Content-Type: application/json
 
 ###
 # Cancel auction
-POST {{baseUrl}}/cancel-auction/{{auction1}}
+POST {{baseUrl}}/cancel-auction/
+Content-Type: application/json
+
+{
+    "AuctionId": "{{auction1}}",
+    "CanceledBy": "{{seller}}",
+    "Reason": "I no longer want to sell."
+}
 
 ###
 # Get Auction (Projection)

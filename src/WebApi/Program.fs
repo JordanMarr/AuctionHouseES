@@ -12,7 +12,7 @@ let routes =
     choose [ 
         GET >=> route "/" >=> text "Auction House ES" 
         POST >=> route "/create-auction/" >=> bindJson Handlers.createAuction
-        POST >=> routef "/cancel-auction/%O" Handlers.cancelAuction
+        POST >=> route "/cancel-auction/" >=> bindJson Handlers.cancelAuction
         POST >=> route "/place-bid/" >=> bindJson Handlers.placeBid 
         GET >=> routef "/get-auction/%O" Handlers.getAuction
     ]

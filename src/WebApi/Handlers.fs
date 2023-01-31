@@ -38,22 +38,34 @@ let createAuction (req: CreateAuctionRequest) (next: HttpFunc) (ctx: HttpContext
         return! Successful.OK() next ctx        
     }
 
-let cancelAuction (auctionId: AuctionId) (next: HttpFunc) (ctx: HttpContext) =
+type CancelAuctionRequest = { AuctionId: AuctionId; CanceledBy: UserId; Reason: string }
+
+let cancelAuction (req: CancelAuctionRequest) (next: HttpFunc) (ctx: HttpContext) =
     task {
         let auctionCanceled : Events.AuctionCanceled = 
             {
-                Id = auctionId
-                CanceledBy = Users.seller
+                Id = req.AuctionId
+                CanceledBy = req.CanceledBy
                 CanceledOn = DateTimeOffset.Now
-                Reason = "Test cancel"
+                Reason = req.Reason
             }
 
         let cfg = ctx.GetService<AppConfig>()
         use store = DocumentStore.For(cfg.ConnectionString)
         use session = store.LightweightSession()
-        session.Events.Append(auctionId, [ box auctionCanceled ]) |> ignore
-        do! session.SaveChangesAsync()
-        return! Successful.OK() next ctx
+
+        // Validate against the current state
+        let! aggregate = session.Events.AggregateStreamAsync<Projections.Auction>(req.AuctionId)
+        match aggregate.Status with 
+        | Projections.AuctionStatus.Canceled -> 
+            return! RequestErrors.conflict(text "Auction has already been canceled.") next ctx
+        | Projections.AuctionStatus.Ended -> 
+            return! RequestErrors.conflict(text "Auction has already ended.") next ctx
+        | Projections.AuctionStatus.Created
+        | Projections.AuctionStatus.Started -> 
+            session.Events.Append(req.AuctionId, [ box auctionCanceled ]) |> ignore
+            do! session.SaveChangesAsync()
+            return! Successful.OK() next ctx
     }
 
     
@@ -78,7 +90,7 @@ let placeBid (req: BidRequest) (next: HttpFunc) (ctx: HttpContext) =
         | Projections.AuctionStatus.Created -> 
             return! RequestErrors.conflict(text "Auction has not started yet.") next ctx
         | Projections.AuctionStatus.Canceled -> 
-            return! RequestErrors.conflict(text "Auction has been canceled.") next ctx
+            return! RequestErrors.conflict(text "Auction has already been canceled.") next ctx
         | Projections.AuctionStatus.Ended -> 
             return! RequestErrors.conflict(text "Auction has already ended.") next ctx
         | Projections.AuctionStatus.Started -> 
