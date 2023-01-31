@@ -1,0 +1,13 @@
+@baseUrl = https://localhost:5001
+
+###
+# root
+GET {{baseUrl}}/
+
+###
+# Create sample auction
+POST {{baseUrl}}/create-sample-auction/cc44da9b-e574-4f50-bc07-09bbe5ee49ec
+
+###
+# Cancel auction
+POST {{baseUrl}}/cancel-auction/cc44da9b-e574-4f50-bc07-09bbe5ee49ec
